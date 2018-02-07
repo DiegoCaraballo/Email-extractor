@@ -3,5 +3,7 @@ Script que busca resultados en DuckDuckGo o Google mediante una palabra clave. I
 Versión: Python 3.x
 
 # Modulos a instalar
-- duckduckgo
-  - urllib2
+- google
+
+# Ejemplos de Uso
+
