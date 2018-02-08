@@ -63,7 +63,7 @@ def menu():
 				listarPorCategoria()
 
 			elif (opcListar == "2"):
-				listarTodo()
+				listarTodo("Emails.db")
 
 		elif (opcion == "4"):
 			print ("")
@@ -81,26 +81,41 @@ def menu():
 
 # Insertar correo, categoria y Url en base de datos
 def insertEmail(db_file, email, categoria, url):
-	pass
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		c.execute("INSERT INTO emails (categoria, email, url) VALUES (?,?,?)", (categoria, email, url))
+		conn.commit()
+		conn.close()
+
+	except Error as e:
+		print(e)
+	finally:
+		conn.close()
 
 # Buscar correo en la base de datos
 def searchEmail(db_file):
-    try:
-        conn = sqlite3.connect(db_file)
-        print(sqlite3.version)
-    except Error as e:
-        print(e)
-    finally:
-        conn.close()
+	pass
+    #try:
+       #conn = sqlite3.connect(db_file)
+	#except Error as e:
+		#print(e)
+	#finally:
+		# conn.close()
 
+# Crea tabla principal		
 def crearTabla(db_file):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
+		
+		#c.execute('drop table if exists emails')
+
 		sql = '''create table if not exists emails 
-				(id int integer primary key,
+				(ID INTEGER PRIMARY KEY AUTOINCREMENT,
 				 categoria varchar(500) NOT NULL,
-				 email varchar(200) NOT NULL)'''
+				 email varchar(200) NOT NULL,
+				 url varchar(500) NOT NULL)'''
 
 		c.execute(sql)
 		c.close()
@@ -110,11 +125,32 @@ def crearTabla(db_file):
 	finally:
 		conn.close()
 
+# Lista correos por categoria
 def listarPorCategoria():
 	pass
 
-def listarTodo():
-	pass
+# Lista todos los correos
+def listarTodo(db_file):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		c.execute("SELECT * FROM emails")
+
+		for i in c:
+
+			print ("")
+			print ("Numero: " + str(i[0]))
+			print ("Categoria: " + str(i[1]))
+			print ("Email: " + str(i[2]))
+			print ("Url: " + str(i[3]))
+			print ("-----------------------------------------------------------------------------------")
+
+		c.close()
+
+	except Error as e:
+		print(e)
+	finally:
+		conn.close()
 
 # Extrae los correos de una Url - 2 niveles
 def extractUrl(url):
@@ -140,3 +176,4 @@ def clear():
 clear()
 crearTabla("Emails.db")	
 menu()
+insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
