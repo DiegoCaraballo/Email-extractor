@@ -66,7 +66,9 @@ def menu():
 				listarTodo()
 
 		elif (opcion == "4"):
-			pass
+			print ("")
+			print ("1 - Guardar una categoria")
+			print ("2 - Guardar todos los correos")
 
 		else:			
 			print ("Seleccione un opcion correcta")
@@ -78,7 +80,7 @@ def menu():
 		"Error en funcion Menu"
 
 # Insertar correo, categoria y Url en base de datos
-def insertEmail(email, categoria, url):
+def insertEmail(db_file, email, categoria, url):
 	pass
 
 # Buscar correo en la base de datos
@@ -90,6 +92,23 @@ def searchEmail(db_file):
         print(e)
     finally:
         conn.close()
+
+def crearTabla(db_file):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = '''create table if not exists emails 
+				(id int integer primary key,
+				 categoria varchar(500) NOT NULL,
+				 email varchar(200) NOT NULL)'''
+
+		c.execute(sql)
+		c.close()
+
+	except Error as e:
+		print(e)
+	finally:
+		conn.close()
 
 def listarPorCategoria():
 	pass
@@ -117,5 +136,7 @@ def clear():
 		"Error al borrar pantalla"
 
 
-# Inicio de Programa	
+# Inicio de Programa
+clear()
+crearTabla("Emails.db")	
 menu()
