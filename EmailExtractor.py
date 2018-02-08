@@ -11,7 +11,7 @@
 #pause : Lapse to wait between HTTP requests. Lapse too short may cause Google to block your IP. Keeping significant lapse will make your program slow but its safe and better option.
 #Return : Generator (iterator) that yields found URLs. If the stop parameter is None the iterator will loop forever.
 
-#from google import search
+import googlesearch
 import random
 import os
 import time
@@ -26,12 +26,29 @@ p = random.randrange(2,6)
 
 def menu():
 	try:
-		opcion = input("Ingreso Opcion: ")
+		clear()
+		print ("###################################################################")
+		print ("#                                                                 #")
+		print ("#                       EMAIL EXTRACTOR                           #")
+		print ("#                                                                 #")
+		print ("###################################################################")
+		print ("")
+		print ("1 - Buscar en una URL")
+		print ("2 - Buscar palabra en Google")
+		print ("")
+
+		opcion = input("Ingrese Opcion: ")
 		if (opcion == "1"):
-			print ("Soy el 1")
+			url = str(input("Ingrese URL: "))
+			extractUrl(url)
+
 		elif (opcion == "2"):
-			print ("Soy el 2")
-		else:
+			frase = str(input("Ingrese una frase a buscar: "))
+			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
+			cantRes = input("Cantiad de resultados en Google: ") 
+			extractFraseGoogle(frase, cantRes)
+		
+		else:			
 			print ("Seleccione un opcion correcta")
 			time.sleep(2)
 			clear()
@@ -39,7 +56,16 @@ def menu():
 		
 	except:
 		"Error en funcion Menu"
-	
+
+# Extrae los correos de una Url - 2 niveles
+def extractUrl(url):
+	pass
+
+# Extrae los correos de todas las Url encontradas en las busquedas
+# De cada Url extrae los correo - 2 niveles
+def extractFraseGoogle(frase, cantRes):
+	pass
+
 # Limpia la pantalla según el sistema operativo
 def clear():
 	if os.name == "posix":
@@ -48,5 +74,5 @@ def clear():
 		os.system("cls")
 
 
-# Inicio de Programa
+# Inicio de Programa	
 menu()
