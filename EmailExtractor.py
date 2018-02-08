@@ -15,6 +15,8 @@ import googlesearch
 import random
 import os
 import time
+import sqlite3
+from sqlite3 import Error
  
 # to search
 query = "Geeksforgeeks"
@@ -35,11 +37,14 @@ def menu():
 		print ("")
 		print ("1 - Buscar en una URL")
 		print ("2 - Buscar palabra en Google")
+		print ("3 - Listar correos")
+		print ("4 - Guardar correos en archivo .txt")
 		print ("")
 
 		opcion = input("Ingrese Opcion: ")
 		if (opcion == "1"):
 			url = str(input("Ingrese URL: "))
+			searchEmail("Emails.db")
 			extractUrl(url)
 
 		elif (opcion == "2"):
@@ -48,6 +53,21 @@ def menu():
 			cantRes = input("Cantiad de resultados en Google: ") 
 			extractFraseGoogle(frase, cantRes)
 		
+		elif (opcion == "3"):
+			print ("")
+			print ("1 - Seleccionar una categoria")
+			print ("2 - Todos los correos")
+			opcListar = input("Ingrese Opcion: ")
+			
+			if (opcListar == "1"):
+				listarPorCategoria()
+
+			elif (opcListar == "2"):
+				listarTodo()
+
+		elif (opcion == "4"):
+			pass
+
 		else:			
 			print ("Seleccione un opcion correcta")
 			time.sleep(2)
@@ -56,6 +76,26 @@ def menu():
 		
 	except:
 		"Error en funcion Menu"
+
+# Insertar correo, categoria y Url en base de datos
+def insertEmail(email, categoria, url):
+	pass
+
+# Buscar correo en la base de datos
+def searchEmail(db_file):
+    try:
+        conn = sqlite3.connect(db_file)
+        print(sqlite3.version)
+    except Error as e:
+        print(e)
+    finally:
+        conn.close()
+
+def listarPorCategoria():
+	pass
+
+def listarTodo():
+	pass
 
 # Extrae los correos de una Url - 2 niveles
 def extractUrl(url):
@@ -68,10 +108,13 @@ def extractFraseGoogle(frase, cantRes):
 
 # Limpia la pantalla según el sistema operativo
 def clear():
-	if os.name == "posix":
-		os.system("clear")
-	elif os.name == "ce" or os.name == "nt" or os.name == "dos":
-		os.system("cls")
+	try:
+		if os.name == "posix":
+			os.system("clear")
+		elif os.name == "ce" or os.name == "nt" or os.name == "dos":
+			os.system("cls")
+	except:
+		"Error al borrar pantalla"
 
 
 # Inicio de Programa	
