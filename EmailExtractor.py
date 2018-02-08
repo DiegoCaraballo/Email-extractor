@@ -1,6 +1,7 @@
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# Comentarios en Español
+# Blog: www.pythondiario.com
 
 from googlesearch import search
 import random
@@ -8,6 +9,7 @@ import os
 import time
 import sqlite3
 from sqlite3 import Error
+import sys
 
 # Menú Principal
 def menu():
@@ -19,29 +21,35 @@ def menu():
 		print ("#                                                                 #")
 		print ("###################################################################")
 		print ("")
-		print ("1 - Buscar en una URL")
-		print ("2 - Buscar palabra en Google")
-		print ("3 - Listar correos")
-		print ("4 - Guardar correos en archivo .txt")
+		print ("              ENGLISH             -               ESPAÑOL          ")
+		print ("-------------------------------------------------------------------")
+		print ("1 - Search in a url - Buscar en una URL")
+		print ("2 - Search phrase in google - Buscar frase en Google")
+		print ("3 - List emails - Listar correos")
+		print ("4 - Save emails in .txt file - Guardar correos en archivo .txt")
+		print ("5 - Exit - Salir")
 		print ("")
 
-		opcion = input("Ingrese Opcion: ")
+		opcion = input("Enter option - Ingrese Opcion: ")
 		if (opcion == "1"):
-			url = str(input("Ingrese URL: "))
+			url = str(input("Enter URL - Ingrese URL: "))
 			searchEmail("Emails.db")
 			extractUrl(url)
+			input("Press any key to continue")
+			menu()
 
 		elif (opcion == "2"):
-			frase = str(input("Ingrese una frase a buscar: "))
+			frase = str(input("Enter a phrase to search - Ingrese una frase a buscar: "))
+			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
-			cantRes = int(input("Cantiad de resultados en Google: ")) 
+			cantRes = int(input("Number of results in Google - Cantiad de resultados en Google: ")) 
 			extractFraseGoogle(frase, cantRes)
 		
 		elif (opcion == "3"):
 			print ("")
-			print ("1 - Seleccionar una frase")
-			print ("2 - Todos los correos")
-			opcListar = input("Ingrese Opcion: ")
+			print ("1 - Select a phrase - Seleccionar una frase")
+			print ("2 - All emails - Todos los correos")
+			opcListar = input("Enter option - Ingrese Opcion: ")
 			
 			if (opcListar == "1"):
 				listarPorFrase()
@@ -51,11 +59,14 @@ def menu():
 
 		elif (opcion == "4"):
 			print ("")
-			print ("1 - Guardar una correos de una frase")
-			print ("2 - Guardar todos los correos")
+			print ("1 - Save emails from a phrase - Guardar correos de una frase")
+			print ("2 - Save all emails - Guardar todos los correos")
+		
+		elif (opcion == "5"):
+			sys.exit(0)
 
 		else:			
-			print ("Seleccione un opcion correcta")
+			print ("Select a correct option - Seleccione un opcion correcta")
 			time.sleep(2)
 			clear()
 			menu()
@@ -123,8 +134,8 @@ def listarTodo(db_file):
 		for i in c:
 
 			print ("")
-			print ("Numero: " + str(i[0]))
-			print ("Frase: " + str(i[1]))
+			print ("Number: " + str(i[0]))
+			print ("Search: " + str(i[1]))
 			print ("Email: " + str(i[2]))
 			print ("Url: " + str(i[3]))
 			print ("-------------------------------------------------------------------------------")
@@ -132,7 +143,7 @@ def listarTodo(db_file):
 		c.close()
 		
 		print ("")
-		input("Presione una tecla para continuar")
+		input("Press any key to continue")
 		menu()
 
 	except Error as e:
@@ -161,9 +172,12 @@ def clear():
 	except:
 		"Error al borrar pantalla"
 
-
 # Inicio de Programa
-clear()
-crearTabla("Emails.db")	
-menu()
-insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
+def Main():
+	clear()
+	crearTabla("Emails.db")	
+	menu()
+	insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
+
+Main()
+

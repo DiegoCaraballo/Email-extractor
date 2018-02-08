@@ -16,8 +16,8 @@
 
 **Versión:** Python 3.x.
 
-# Modulos a instalar
+# Required modules - Modulos necesarios
 - googlesearch
 
-# Ejemplos de Uso
+# Examples - Ejemplos
 
