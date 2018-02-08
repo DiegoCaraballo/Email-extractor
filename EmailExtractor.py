@@ -4,6 +4,8 @@
 # Blog: www.pythondiario.com
 
 from googlesearch import search
+from bs4 import BeautifulSoup
+import urllib.request
 import random
 import os
 import time
@@ -32,10 +34,11 @@ def menu():
 
 		opcion = input("Enter option - Ingrese Opcion: ")
 		if (opcion == "1"):
+			print ("Example URL: http://www.pythondiario.com")
 			url = str(input("Enter URL - Ingrese URL: "))
-			searchEmail("Emails.db")
+			#searchEmail("Emails.db")
 			extractUrl(url)
-			input("Press any key to continue")
+			input("Press enter key to continue")
 			menu()
 
 		elif (opcion == "2"):
@@ -43,7 +46,10 @@ def menu():
 			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
 			cantRes = int(input("Number of results in Google - Cantiad de resultados en Google: ")) 
+			print ("")
 			extractFraseGoogle(frase, cantRes)
+			input("Press enter key to continue")
+			menu()
 		
 		elif (opcion == "3"):
 			print ("")
@@ -143,7 +149,7 @@ def listarTodo(db_file):
 		c.close()
 		
 		print ("")
-		input("Press any key to continue")
+		input("Press enter key to continue")
 		menu()
 
 	except Error as e:
@@ -153,7 +159,21 @@ def listarTodo(db_file):
 
 # Extrae los correos de una Url - 2 niveles
 def extractUrl(url):
-	pass
+	print ("Entro en url....")
+	try:
+		conn = urllib.request.urlopen(url)
+		html = conn.read()
+
+		soup = BeautifulSoup(html, "lxml")
+		links = soup.find_all('a')
+
+		for tag in links:
+			link = tag.get('href', None)
+			if link is not None:
+				print (link)
+
+	except Exception as e:
+		print(e)
 
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
@@ -161,6 +181,8 @@ def extractFraseGoogle(frase, cantRes):
 
 	for url in search(frase, stop=cantRes):
             print(url)
+
+	input("Press enter key to continue")
 
 # Limpia la pantalla según el sistema operativo
 def clear():
