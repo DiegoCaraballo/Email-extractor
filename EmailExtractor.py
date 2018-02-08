@@ -9,8 +9,7 @@ import time
 import sqlite3
 from sqlite3 import Error
 
-input("Presione una tecla para continuar")
-
+# Menú Principal
 def menu():
 	try:
 		clear()
@@ -35,24 +34,24 @@ def menu():
 		elif (opcion == "2"):
 			frase = str(input("Ingrese una frase a buscar: "))
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
-			cantRes = input("Cantiad de resultados en Google: ") 
+			cantRes = int(input("Cantiad de resultados en Google: ")) 
 			extractFraseGoogle(frase, cantRes)
 		
 		elif (opcion == "3"):
 			print ("")
-			print ("1 - Seleccionar una categoria")
+			print ("1 - Seleccionar una frase")
 			print ("2 - Todos los correos")
 			opcListar = input("Ingrese Opcion: ")
 			
 			if (opcListar == "1"):
-				listarPorCategoria()
+				listarPorFrase()
 
 			elif (opcListar == "2"):
 				listarTodo("Emails.db")
 
 		elif (opcion == "4"):
 			print ("")
-			print ("1 - Guardar una categoria")
+			print ("1 - Guardar una correos de una frase")
 			print ("2 - Guardar todos los correos")
 
 		else:			
@@ -64,12 +63,12 @@ def menu():
 	except:
 		"Error en funcion Menu"
 
-# Insertar correo, categoria y Url en base de datos
-def insertEmail(db_file, email, categoria, url):
+# Insertar correo, frase y Url en base de datos
+def insertEmail(db_file, email, frase, url):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
-		c.execute("INSERT INTO emails (categoria, email, url) VALUES (?,?,?)", (categoria, email, url))
+		c.execute("INSERT INTO emails (frase, email, url) VALUES (?,?,?)", (frase, email, url))
 		conn.commit()
 		conn.close()
 
@@ -98,7 +97,7 @@ def crearTabla(db_file):
 
 		sql = '''create table if not exists emails 
 				(ID INTEGER PRIMARY KEY AUTOINCREMENT,
-				 categoria varchar(500) NOT NULL,
+				 frase varchar(500) NOT NULL,
 				 email varchar(200) NOT NULL,
 				 url varchar(500) NOT NULL)'''
 
@@ -110,8 +109,8 @@ def crearTabla(db_file):
 	finally:
 		conn.close()
 
-# Lista correos por categoria
-def listarPorCategoria():
+# Lista correos por frase
+def listarPorFrase():
 	pass
 
 # Lista todos los correos
@@ -125,12 +124,16 @@ def listarTodo(db_file):
 
 			print ("")
 			print ("Numero: " + str(i[0]))
-			print ("Categoria: " + str(i[1]))
+			print ("Frase: " + str(i[1]))
 			print ("Email: " + str(i[2]))
 			print ("Url: " + str(i[3]))
 			print ("-------------------------------------------------------------------------------")
 
 		c.close()
+		
+		print ("")
+		input("Presione una tecla para continuar")
+		menu()
 
 	except Error as e:
 		print(e)
@@ -144,6 +147,7 @@ def extractUrl(url):
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
 def extractFraseGoogle(frase, cantRes):
+
 	for url in search(frase, stop=cantRes):
             print(url)
 
