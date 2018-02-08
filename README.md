@@ -1,12 +1,20 @@
 # Email Extractor Functions
 
-##English 
-Script that searches results in Google using a keyword. Enter the results, extract the emails from all their links and save in a database.
+## English 
+- Extract emails from a URL
+- Do a Google search, save the Urls found and search the emails
+- The emails are stored in a Sqlite database
+- You can list the saved emails
+- You can save the mailing list in a .txt file
 
-##Español 
-Script que busca resultados en Google mediante una palabra clave. Ingresa a los resultados, extrae los correos de todos sus links y los guarda en una base de datos. 
+## Español 
+- Extraer los correos de una Url
+- Hacer una busqueda en Google, guardar las Urls encontradas y buscar los correos en dichas Urls
+- Los correos son guardados en una base de datos Sqlite
+- Se pueden listar los correos guardados
+- Se pueden guardar los correo en un archivo .txt
 
-Versión: Python 3.x.
+**Versión:** Python 3.x.
 
 # Modulos a instalar
 - googlesearch
