@@ -2,29 +2,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#query : query string that we want to search for.
-#tld : tld stands for top level domain which means we want to search our result on google.com or google.in or some other domain.
-#lang : lang stands for language.
-#num : Number of results we want.
-#start : First result to retrieve.
-#stop : Last result to retrieve. Use None to keep searching forever.
-#pause : Lapse to wait between HTTP requests. Lapse too short may cause Google to block your IP. Keeping significant lapse will make your program slow but its safe and better option.
-#Return : Generator (iterator) that yields found URLs. If the stop parameter is None the iterator will loop forever.
-
-import googlesearch
+from googlesearch import search
 import random
 import os
 import time
 import sqlite3
 from sqlite3 import Error
- 
-# to search
-query = "Geeksforgeeks"
-p = random.randrange(2,6)
- 
-#for j in search(query, tld="co.in", num=10, stop=1, pause=p):
-#    print(j)
 
+input("Presione una tecla para continuar")
 
 def menu():
 	try:
@@ -143,7 +128,7 @@ def listarTodo(db_file):
 			print ("Categoria: " + str(i[1]))
 			print ("Email: " + str(i[2]))
 			print ("Url: " + str(i[3]))
-			print ("-----------------------------------------------------------------------------------")
+			print ("-------------------------------------------------------------------------------")
 
 		c.close()
 
@@ -159,7 +144,8 @@ def extractUrl(url):
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
 def extractFraseGoogle(frase, cantRes):
-	pass
+	for url in search(frase, stop=cantRes):
+            print(url)
 
 # Limpia la pantalla según el sistema operativo
 def clear():
