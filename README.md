@@ -1,14 +1,16 @@
 # Email Extractor Functions
 
 ## English 
-- Extract emails from a URL
+- Extract emails from a single URL
+- Extract emails from a URL (Two Levels)
 - Do a Google search, save the Urls found and search the emails
 - The emails are stored in a Sqlite database
 - You can list the saved emails
 - You can save the mailing list in a .txt file
 
-## Español 
-- Extraer los correos de una Url
+## Español
+- Extraer los correos de una única URL
+- Extraer los correos de una Url (Dos Niveles)
 - Hacer una busqueda en Google, guardar las Urls encontradas y buscar los correos en dichas Urls
 - Los correos son guardados en una base de datos Sqlite
 - Se pueden listar los correos guardados
