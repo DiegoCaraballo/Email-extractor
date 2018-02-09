@@ -168,18 +168,25 @@ def listarTodo(db_file):
 
 def extractOnlyUrl(url):
 	try:
-		count = 0
-		conn = urllib.request.urlopen(url)
-
-		html = conn.read().decode('utf-8')
-
 		print ("Searching emails... please wait")
 
-		emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", html)
+		count = 0
+		listUrl = []
 
+		conn = urllib.request.urlopen(url)
+
+		html = conn.read().decode('utf-8')		
+
+		emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", html)
+		print (emails)
+		
 		for email in emails:
-			count += 1
-			print(str(count) + " - " + email)
+			if (email not in listUrl):
+					count += 1
+					print(str(count) + " - " + email)
+					listUrl.append(email)
+
+		print(str(count) + " emails were found")
 
 	except Exception as e:
 		print (e)
@@ -211,12 +218,15 @@ def extractUrl(url):
 						s = f.read().decode('utf-8')
 						emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 						for email in emails:
-							count += 1
-							print(str(count) + " - " + email)
+							if (email not in listUrl):
+								count += 1
+								print(str(count) + " - " + email)
+								listUrl.append(email)
 				# Sigue si existe algun error
 				except Exception:
 					pass
 		
+		print(str(count) + " emails were found")
 
 	except Exception as e:
 		print(e)
