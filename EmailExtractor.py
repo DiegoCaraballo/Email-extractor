@@ -177,16 +177,17 @@ def extractOnlyUrl(url):
 
 		html = conn.read().decode('utf-8')		
 
-		emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", html)
-		print (emails)
-		
+		emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}', html)
+
 		for email in emails:
 			if (email not in listUrl):
 					count += 1
 					print(str(count) + " - " + email)
 					listUrl.append(email)
-
+		print("")
+		print("***********************")
 		print(str(count) + " emails were found")
+		print("***********************")
 
 	except Exception as e:
 		print (e)
@@ -202,7 +203,16 @@ def extractUrl(url):
 
 		conn = urllib.request.urlopen(url)
 
-		html = conn.read()
+		html = conn.read().decode('utf-8')
+		
+		emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", html)
+		print ("Searching in " + url)
+		
+		for email in emails:
+			if (email not in listUrl):
+					count += 1
+					print(str(count) + " - " + email)
+					listUrl.append(email)
 
 		soup = BeautifulSoup(html, "lxml")
 		links = soup.find_all('a')
