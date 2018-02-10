@@ -193,6 +193,10 @@ def extractOnlyUrl(url):
 		print(str(count) + " emails were found")
 		print("***********************")
 
+	except KeyboardInterrupt:
+		input("Press return to continue")
+		menu()
+		
 	except Exception as e:
 		print (e)
 
@@ -225,7 +229,6 @@ def extractUrl(url):
 			link = tag.get('href', None)
 			if link is not None:
 				try:
-					#listUrl.append(link)
 					print ("Searching in " + link)
 					if(link[0:4] == 'http'):
 						f = urllib.request.urlopen(link)
@@ -242,6 +245,10 @@ def extractUrl(url):
 		
 		print(str(count) + " emails were found")
 
+	except KeyboardInterrupt:
+		input("Press return to continue")
+		menu()
+
 	except Exception as e:
 		print(e)
 
@@ -250,22 +257,48 @@ def extractUrl(url):
 def extractFraseGoogle(frase, cantRes):
 	try:
 		listUrl = []
+		count = 0
 
 		for url in search(frase, stop=cantRes):
 			listUrl.append(url)
 
 		for i in listUrl:
-			conn = urllib.request.urlopen(i)
+			try:
+				conn = urllib.request.urlopen(i)
+				html = conn.read()
 
-			html = conn.read()
+				soup = BeautifulSoup(html, "lxml")
+				links = soup.find_all('a')
 
-			soup = BeautifulSoup(html, "lxml")
-			links = soup.find_all('a')
+				for tag in links:
+					link = tag.get('href', None)
+					if link is not None:
+						try:
+							print ("Searching in " + link)
+							if(link[0:4] == 'http'):
+								f = urllib.request.urlopen(link)
+								s = f.read().decode('utf-8')
+								emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
+								for email in emails:
+									if (email not in listUrl):
+										count += 1
+										print(str(count) + " - " + email)
+										insertEmail("Emails.db", email, frase, link)
+										listUrl.append(email)
+						# Sigue si existe algun error
+						except Exception:
+							pass
+		
+				print(str(count) + " emails were found")
 
-			for tag in links:
-				link = tag.get('href', None)
-				if link is not None:
-					print (link)
+			except urllib.error.URLError as e:
+				print("Problems with the url:" + i)
+				print(e)
+				pass
+
+	except KeyboardInterrupt:
+		input("Press return to continue")
+		menu()
 
 	except Exception as e:
 		print(e)
@@ -285,7 +318,7 @@ def Main():
 	clear()
 	crearTabla("Emails.db")	
 	menu()
-	insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
+	#insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
 
 Main()
 
