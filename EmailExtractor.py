@@ -67,14 +67,23 @@ def menu():
 		elif (opcion == "4"):
 			print ("")
 			print ("1 - Select a phrase - Seleccionar una frase")
-			print ("2 - All emails - Todos los correos")
+			print ("2 - Insert a URL")
+			print ("3 - All emails - Todos los correos")
 			opcListar = input("Enter option - Ingrese Opcion: ")
 			
 			if (opcListar == "1"):
 				listarPorFrase()
 
 			elif (opcListar == "2"):
+				listarPorUrl("Emails.db")
+
+			elif (opcListar == "3"):
 				listarTodo("Emails.db")
+
+			else:
+				print("Incorrect option, return to the menu...")
+				time.sleep(2)
+				menu()
 
 		elif (opcion == "5"):
 			print ("")
@@ -113,6 +122,8 @@ def menu():
 		
 	except Exception as e:
 		print (e)
+		input("Press enter to continue")
+		menu()
 
 # Insertar correo, frase y Url en base de datos
 def insertEmail(db_file, email, frase, url):
@@ -125,6 +136,9 @@ def insertEmail(db_file, email, frase, url):
 
 	except Error as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
+
 	finally:
 		conn.close()
 
@@ -135,23 +149,26 @@ def searchEmail(db_file, email, frase):
 		c = conn.cursor()
 		sql = 'SELECT COUNT(*) FROM emails where email LIKE "%' + str(email) + '%" AND frase LIKE "%' + str(frase) + '%"'
 		result = c.execute(sql).fetchone()
+		conn.close()
 
 		return (result[0])
 
-		conn.close()
-
 	except Error as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
+
 	finally:
 		conn.close()
 
 # Crea tabla principal		
-def crearTabla(db_file):
+def crearTabla(db_file, delete = False):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
 		
-		#c.execute('drop table if exists emails')
+		if(delete == True):
+			c.execute('drop table if exists emails')			
 
 		sql = '''create table if not exists emails 
 				(ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -164,6 +181,9 @@ def crearTabla(db_file):
 
 	except Error as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
+
 	finally:
 		conn.close()
 
@@ -186,6 +206,7 @@ def deleteAll(db_file):
 			if(option == "Y" or option == "y"):
 				c.execute("DELETE FROM emails")
 				conn.commit()
+				crearTabla("Emails.db", True)
 				print("All emails were deleted")
 				input("Press enter to continue")
 				menu()
@@ -202,12 +223,53 @@ def deleteAll(db_file):
 
 	except Error as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
+
 	finally:
 		conn.close()
 
 # Lista correos por frase
 def listarPorFrase():
 	pass
+
+def listarPorUrl(db_file):
+	try:
+		print("Example URL: http://www.pythondiario.com ")
+		url = str(input("Insert a Url: "))
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+
+		sql = 'SELECT COUNT(*) FROM emails WHERE url LIKE "%' + url.strip() + '%"'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+				print("No results for the specified url")
+				input("Press enter to continue")
+				menu()
+
+		else:
+			c.execute('SELECT * FROM emails WHERE url LIKE "%' + url.strip() + '%"')
+
+			for i in c:
+
+				print ("")
+				print ("Number: " + str(i[0]))
+				print ("Search: " + str(i[1]))
+				print ("Email: " + str(i[2]))
+				print ("Url: " + str(i[3]))
+				print ("-------------------------------------------------------------------------------")
+
+		c.close()
+		
+		print ("")
+		input("Press enter key to continue")
+		menu()
+
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
 
 # Lista todos los correos
 def listarTodo(db_file):
@@ -242,6 +304,9 @@ def listarTodo(db_file):
 
 	except Error as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
+
 	finally:
 		conn.close()
 
@@ -278,6 +343,8 @@ def extractOnlyUrl(url):
 
 	except Exception as e:
 		print (e)
+		input("Press enter to continue")
+		menu()
 
 # Extrae los correos de una Url - 2 niveles
 def extractUrl(url):
@@ -336,6 +403,8 @@ def extractUrl(url):
 
 	except Exception as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
 
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
@@ -391,6 +460,8 @@ def extractFraseGoogle(frase, cantRes):
 
 	except Exception as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
 
 # Limpia la pantalla según el sistema operativo
 def clear():
@@ -401,13 +472,13 @@ def clear():
 			os.system("cls")
 	except Exception as e:
 		print(e)
+		input("Press enter to continue")
+		menu()
 
 # Inicio de Programa
 def Main():
 	clear()
-	crearTabla("Emails.db")	
-	#searchEmail("Emails.db", "aamistadtaller@gmail.com", "taller mecanico en buenos aires")
-	#input("papapa")
+	crearTabla("Emails.db", False)	
 	menu()
 
 Main()
