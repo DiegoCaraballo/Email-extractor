@@ -35,7 +35,8 @@ def menu():
 		print("3 - Search phrase in google - Buscar frase en Google")
 		print("4 - List emails - Listar correos")
 		print("5 - Save emails in .txt file - Guardar correos en archivo .txt")
-		print("6 - Exit - Salir")
+		print("6 - Delete Emails from Data Base")
+		print("7 - Exit - Salir")
 		print("")
 
 		opcion = input("Enter option - Ingrese Opcion: ")
@@ -79,8 +80,29 @@ def menu():
 			print ("")
 			print ("1 - Save emails from a phrase - Guardar correos de una frase")
 			print ("2 - Save all emails - Guardar todos los correos")
-		
+
 		elif (opcion == "6"):
+			print("")
+			print("1 - Delete emails from a especific URL")
+			print("2 - Delete emails from a especific phrase")
+			print("3 - Delete all Emails")
+			op = input("Enter option: ")
+
+			if(op == "1"):
+				pass
+			
+			elif(op == "2"):
+				pass
+
+			elif(op == "3"):
+				deleteAll("Emails.db")
+
+			else:
+				print("Incorrect option, return to the menu...")
+				time.sleep(2)
+				menu()
+		
+		elif (opcion == "7"):
 			sys.exit(0)
 
 		else:			
@@ -107,14 +129,21 @@ def insertEmail(db_file, email, frase, url):
 		conn.close()
 
 # Buscar correo en la base de datos
-def searchEmail(db_file):
-	pass
-    #try:
-       #conn = sqlite3.connect(db_file)
-	#except Error as e:
-		#print(e)
-	#finally:
-		# conn.close()
+def searchEmail(db_file, email, frase):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails where email LIKE "%' + str(email) + '%" AND frase LIKE "%' + str(frase) + '%"'
+		result = c.execute(sql).fetchone()
+
+		return (result[0])
+
+		conn.close()
+
+	except Error as e:
+		print(e)
+	finally:
+		conn.close()
 
 # Crea tabla principal		
 def crearTabla(db_file):
@@ -138,6 +167,44 @@ def crearTabla(db_file):
 	finally:
 		conn.close()
 
+# Borra todos los correos
+def deleteAll(db_file):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+		
+		else:			
+			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
+			
+			if(option == "Y" or option == "y"):
+				c.execute("DELETE FROM emails")
+				conn.commit()
+				print("All emails were deleted")
+				input("Press enter to continue")
+				menu()
+
+			elif(option == "N" or option == "n"):
+				print("Canceled operation, return to the menu ...")
+				time.sleep(2)
+				menu()
+
+			else:
+				print("Select a correct option")
+				time.sleep(2)
+				deleteAll(db_file)
+
+	except Error as e:
+		print(e)
+	finally:
+		conn.close()
+
 # Lista correos por frase
 def listarPorFrase():
 	pass
@@ -147,6 +214,15 @@ def listarTodo(db_file):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
+
+		sql = 'SELECT COUNT(*) FROM emails'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+			print("The data base is Empty")
+			input("Press enter to continue")
+			menu()
+
 		c.execute("SELECT * FROM emails")
 
 		for i in c:
@@ -185,9 +261,12 @@ def extractOnlyUrl(url):
 
 		for email in emails:
 			if (email not in listUrl):
-					count += 1
-					print(str(count) + " - " + email)
-					listUrl.append(email)
+				count += 1
+				print(str(count) + " - " + email)
+				listUrl.append(email)
+				if(searchEmail("Emails.db", email, "Especific Search") == 0):
+					insertEmail("Emails.db", email, "Especific Search", url)
+
 		print("")
 		print("***********************")
 		print(str(count) + " emails were found")
@@ -196,7 +275,7 @@ def extractOnlyUrl(url):
 	except KeyboardInterrupt:
 		input("Press return to continue")
 		menu()
-		
+
 	except Exception as e:
 		print (e)
 
@@ -239,11 +318,17 @@ def extractUrl(url):
 								count += 1
 								print(str(count) + " - " + email)
 								listUrl.append(email)
+								if(searchEmail("Emails.db", email, "Especific Search") == 0):
+									insertEmail("Emails.db", email, "Especific Search", url)
+
 				# Sigue si existe algun error
 				except Exception:
 					pass
 		
+		print("")
+		print("***********************")
 		print(str(count) + " emails were found")
+		print("***********************")
 
 	except KeyboardInterrupt:
 		input("Press return to continue")
@@ -255,6 +340,8 @@ def extractUrl(url):
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
 def extractFraseGoogle(frase, cantRes):
+	print ("Searching emails... please wait")
+	print ("This operation may take several minutes")
 	try:
 		listUrl = []
 		count = 0
@@ -282,9 +369,11 @@ def extractFraseGoogle(frase, cantRes):
 								for email in emails:
 									if (email not in listUrl):
 										count += 1
-										print(str(count) + " - " + email)
-										insertEmail("Emails.db", email, frase, link)
+										print(str(count) + " - " + email)										
 										listUrl.append(email)
+										if (searchEmail("Emails.db", email, frase) == 0):
+											insertEmail("Emails.db", email, frase, link)
+											
 						# Sigue si existe algun error
 						except Exception:
 							pass
@@ -317,8 +406,8 @@ def clear():
 def Main():
 	clear()
 	crearTabla("Emails.db")	
+	#searchEmail("Emails.db", "aamistadtaller@gmail.com", "taller mecanico en buenos aires")
+	#input("papapa")
 	menu()
-	#insertEmail("Emails.db", "Programadores en Uruguay", "prueba@gmail.com", "www.pythondiario.com")
 
 Main()
-
