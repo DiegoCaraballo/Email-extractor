@@ -98,10 +98,13 @@ def menu():
 			op = input("Enter option: ")
 
 			if(op == "1"):
-				pass
+				print("Example URL: http://www.pythondiario.com")
+				url = str(input("Insert URL: "))
+				deleteUrl("Emails.db", url.strip())
 			
 			elif(op == "2"):
-				pass
+				phrase = str(input("Insert Phrase: "))
+				deletePhrase("Emails.db", phrase.strip())
 
 			elif(op == "3"):
 				deleteAll("Emails.db")
@@ -187,6 +190,49 @@ def crearTabla(db_file, delete = False):
 	finally:
 		conn.close()
 
+# Borra todos los correos de una URL específica
+def deleteUrl(db_file, url):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE url = ' + '"' + url + '"'
+		result = c.execute(sql).fetchone()
+		
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
+			
+			if(option == "Y" or option == "y"):
+				c.execute("DELETE FROM emails WHERE url = " + '"' + url + '"')
+				conn.commit()
+
+				print("Emails deleted")
+				input("Press enter to continue")
+				menu()
+				
+			elif(option == "N" or option == "n"):
+				print("Canceled operation, return to the menu ...")
+				time.sleep(2)
+				menu()
+				
+			else:
+				print("Select a correct option")
+				time.sleep(2)
+				deleteUrl(db_file, url)
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+
+# Borra todos los correos de una Frase específica
+def deletePhrase(db_file, phrase):
+	pass
+
 # Borra todos los correos
 def deleteAll(db_file):
 	try:
@@ -199,6 +245,7 @@ def deleteAll(db_file):
 			print("There are no emails to erase")
 			input("Press enter to continue")
 			menu()
+		
 		
 		else:			
 			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
