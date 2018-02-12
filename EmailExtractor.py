@@ -31,7 +31,7 @@ def menu():
 		print("|              ENGLISH             -               ESPAÑOL         | ")
 		print(" ------------------------------------------------------------------")
 		print("1 - Search only in the entered URL - Buscar solo en la URL ingresada")
-		print("2 - Search in a url (Two Levels) - Buscar en una URL(Dos Niveles) **Enter the url and the ones you find inside**")
+		print("2 - Search in a url (Two Levels) - Buscar en una URL(Dos Niveles)")
 		print("3 - Search phrase in google - Buscar frase en Google")
 		print("4 - List emails - Listar correos")
 		print("5 - Save emails in .txt file - Guardar correos en archivo .txt")
@@ -41,6 +41,7 @@ def menu():
 
 		opcion = input("Enter option - Ingrese Opcion: ")
 		if (opcion == "1"):
+			print("")
 			print ("Example URL: http://www.pythondiario.com")
 			url = str(input("Enter URL - Ingrese URL: "))
 			extractOnlyUrl(url)
@@ -48,6 +49,7 @@ def menu():
 			menu()
 
 		if (opcion == "2"):
+			print("")
 			print ("Example URL: http://www.pythondiario.com")
 			url = str(input("Enter URL - Ingrese URL: "))
 			extractUrl(url)
@@ -55,6 +57,7 @@ def menu():
 			menu()
 
 		elif (opcion == "3"):
+			print("")
 			frase = str(input("Enter a phrase to search - Ingrese una frase a buscar: "))
 			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
@@ -137,11 +140,16 @@ def menu():
 			sys.exit(0)
 
 		else:			
+			print("")
 			print ("Select a correct option - Seleccione un opcion correcta")
-			time.sleep(2)
+			time.sleep(3)
 			clear()
 			menu()
-		
+	
+	except KeyboardInterrupt:
+		input("Press return to continue")
+		menu()
+
 	except Exception as e:
 		print (e)
 		input("Press enter to continue")
