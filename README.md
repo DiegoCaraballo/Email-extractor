@@ -1,4 +1,6 @@
-![alt text](https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG)
+<p align="center">
+  <img width="460" height="300" src="https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG">
+</p>
 
 # Email Extractor Functions
 
