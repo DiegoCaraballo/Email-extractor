@@ -228,10 +228,51 @@ def deleteUrl(db_file, url):
 		print(e)
 		input("Press enter to continue")
 		menu()
+		
+	finally:
+		conn.close()
 
 # Borra todos los correos de una Frase específica
 def deletePhrase(db_file, phrase):
-	pass
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE frase = ' + '"' + phrase + '"'
+		result = c.execute(sql).fetchone()
+		
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
+			
+			if(option == "Y" or option == "y"):
+				c.execute("DELETE FROM emails WHERE frase = " + '"' + phrase + '"')
+				conn.commit()
+
+				print("Emails deleted")
+				input("Press enter to continue")
+				menu()
+				
+			elif(option == "N" or option == "n"):
+				print("Canceled operation, return to the menu ...")
+				time.sleep(2)
+				menu()
+				
+			else:
+				print("Select a correct option")
+				time.sleep(2)
+				deleteUrl(db_file, phrase)
+				
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
 
 # Borra todos los correos
 def deleteAll(db_file):
