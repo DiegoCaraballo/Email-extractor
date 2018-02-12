@@ -1,3 +1,5 @@
+![alt text](https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG)
+
 # Email Extractor Functions
 
 ## English 
