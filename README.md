@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="460" height="300" src="https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG">
+  <img width="560" height="400" src="https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG">
 </p>
 
 # Email Extractor Functions
