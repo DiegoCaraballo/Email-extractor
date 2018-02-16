@@ -31,7 +31,7 @@ def menu():
 		print("|              ENGLISH             -               ESPAÑOL         | ")
 		print(" ------------------------------------------------------------------")
 		print("1 - Search only in the entered URL - Buscar solo en la URL ingresada")
-		print("2 - Search in a url (Two Levels) - Buscar en una URL(Dos Niveles) **Enter the url and the ones you find inside**")
+		print("2 - Search in a url (Two Levels) - Buscar en una URL(Dos Niveles)")
 		print("3 - Search phrase in google - Buscar frase en Google")
 		print("4 - List emails - Listar correos")
 		print("5 - Save emails in .txt file - Guardar correos en archivo .txt")
@@ -41,6 +41,7 @@ def menu():
 
 		opcion = input("Enter option - Ingrese Opcion: ")
 		if (opcion == "1"):
+			print("")
 			print ("Example URL: http://www.pythondiario.com")
 			url = str(input("Enter URL - Ingrese URL: "))
 			extractOnlyUrl(url)
@@ -48,6 +49,7 @@ def menu():
 			menu()
 
 		if (opcion == "2"):
+			print("")
 			print ("Example URL: http://www.pythondiario.com")
 			url = str(input("Enter URL - Ingrese URL: "))
 			extractUrl(url)
@@ -55,6 +57,7 @@ def menu():
 			menu()
 
 		elif (opcion == "3"):
+			print("")
 			frase = str(input("Enter a phrase to search - Ingrese una frase a buscar: "))
 			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
@@ -72,7 +75,7 @@ def menu():
 			opcListar = input("Enter option - Ingrese Opcion: ")
 			
 			if (opcListar == "1"):
-				listarPorFrase()
+				listarPorFrase("Emails.db")
 
 			elif (opcListar == "2"):
 				listarPorUrl("Emails.db")
@@ -86,9 +89,28 @@ def menu():
 				menu()
 
 		elif (opcion == "5"):
-			print ("")
-			print ("1 - Save emails from a phrase - Guardar correos de una frase")
-			print ("2 - Save all emails - Guardar todos los correos")
+			print("")
+			print("1 - Save emails from a phrase - Guardar correos de una frase")
+			print("2 - Save emails from a URL - Guardar correos de una URL")
+			print("3 - Save all emails - Guardar todos los correos")
+			opcGuardar = input("Enter Option - Ingrese Opcion: ")
+			
+			if(opcGuardar == "1"):
+				frase = str(input("Enter phrase: "))
+				guardarFrase("Emails.db", frase)
+				
+			elif(opcGuardar == "2"):
+				print("Example URL: http://www.pythondiario.com")
+				url = str(input("Insert URL: "))
+				guardarUrl("Emails.db", url)
+				
+			elif(opcGuardar == "3"):
+				guardarAll("Emails.db")
+				
+			else:
+				print("Incorrect option, return to the menu...")
+				time.sleep(2)
+				menu()
 
 		elif (opcion == "6"):
 			print("")
@@ -98,10 +120,13 @@ def menu():
 			op = input("Enter option: ")
 
 			if(op == "1"):
-				pass
+				print("Example URL: http://www.pythondiario.com")
+				url = str(input("Insert URL: "))
+				deleteUrl("Emails.db", url.strip())
 			
 			elif(op == "2"):
-				pass
+				phrase = str(input("Insert Phrase: "))
+				deletePhrase("Emails.db", phrase.strip())
 
 			elif(op == "3"):
 				deleteAll("Emails.db")
@@ -115,11 +140,16 @@ def menu():
 			sys.exit(0)
 
 		else:			
+			print("")
 			print ("Select a correct option - Seleccione un opcion correcta")
-			time.sleep(2)
+			time.sleep(3)
 			clear()
 			menu()
-		
+	
+	except KeyboardInterrupt:
+		input("Press return to continue")
+		menu()
+
 	except Exception as e:
 		print (e)
 		input("Press enter to continue")
@@ -130,7 +160,7 @@ def insertEmail(db_file, email, frase, url):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
-		c.execute("INSERT INTO emails (frase, email, url) VALUES (?,?,?)", (frase, email, url))
+		c.execute("INSERT INTO emails (phrase, email, url) VALUES (?,?,?)", (frase, email, url))
 		conn.commit()
 		conn.close()
 
@@ -147,7 +177,7 @@ def searchEmail(db_file, email, frase):
 	try:
 		conn = sqlite3.connect(db_file)
 		c = conn.cursor()
-		sql = 'SELECT COUNT(*) FROM emails where email LIKE "%' + str(email) + '%" AND frase LIKE "%' + str(frase) + '%"'
+		sql = 'SELECT COUNT(*) FROM emails where email LIKE "%' + str(email) + '%" AND phrase LIKE "%' + str(frase) + '%"'
 		result = c.execute(sql).fetchone()
 		conn.close()
 
@@ -172,18 +202,263 @@ def crearTabla(db_file, delete = False):
 
 		sql = '''create table if not exists emails 
 				(ID INTEGER PRIMARY KEY AUTOINCREMENT,
-				 frase varchar(500) NOT NULL,
+				 phrase varchar(500) NOT NULL,
 				 email varchar(200) NOT NULL,
 				 url varchar(500) NOT NULL)'''
 
 		c.execute(sql)
-		c.close()
+		conn.close()
 
 	except Error as e:
 		print(e)
 		input("Press enter to continue")
 		menu()
 
+	finally:
+		conn.close()
+
+# Guardar por URL en un archivo .txt
+def guardarUrl(db_file, url):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE url = "' + url.strip() + '"'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			nameFile = str(input("Name of the file: "))
+			print("")
+			print("Save file, please wait...")
+			
+			f = open(nameFile.strip() + ".txt", "w")
+		
+			c.execute('SELECT * FROM emails WHERE url = "' + url.strip() + '"')
+			
+			count = 0
+			
+			for i in c:
+				count += 1
+				f.write("")
+				f.write("Number: " + str(count) + '\n')
+				f.write("Phrase: " + str(i[1]) + '\n')
+				f.write("Email: " + str(i[2]) + '\n')
+				f.write("Url: " + str(i[3]) + '\n')
+				f.write("-------------------------------------------------------------------------------" + '\n')
+				
+			f.close()
+			
+		conn.close()
+		input("Press enter to continue")
+		menu()
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	except Exception as o:
+		print(o)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
+
+# Guardar por frase en un archivo .txt
+def guardarFrase(db_file, frase):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE phrase = "' + frase.strip() + '"'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			nameFile = str(input("Name of the file: "))
+			print("")
+			print("Save file, please wait...")
+			
+			f = open(nameFile.strip() + ".txt", "w")
+		
+			c.execute('SELECT * FROM emails WHERE phrase = "' + frase.strip() + '"')
+			
+			count = 0
+			
+			for i in c:
+				count += 1
+				f.write("")
+				f.write("Number: " + str(count) + '\n')
+				f.write("Phrase: " + str(i[1]) + '\n')
+				f.write("Email: " + str(i[2]) + '\n')
+				f.write("Url: " + str(i[3]) + '\n')
+				f.write("-------------------------------------------------------------------------------" + '\n')
+				
+			f.close()
+			
+		conn.close()
+		input("Press enter to continue")
+		menu()
+			
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	except Exception as o:
+		print(o)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
+
+# Guardar todos los correos en un archivo .txt
+def guardarAll(db_file):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails'
+		result = c.execute(sql).fetchone()
+
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			nameFile = str(input("Name of the file: "))
+			print("")
+			print("Save file, please wait...")
+			
+			f = open(nameFile + ".txt", "w")
+		
+			c.execute('SELECT * FROM emails')
+			
+			count = 0
+			
+			for i in c:
+				count += 1
+				f.write("")
+				f.write("Number: " + str(count) + '\n')
+				f.write("Phrase: " + str(i[1]) + '\n')
+				f.write("Email: " + str(i[2]) + '\n')
+				f.write("Url: " + str(i[3]) + '\n')
+				f.write("-------------------------------------------------------------------------------" + '\n')
+				
+			f.close()
+			
+		conn.close()
+		
+		input("Press enter to continue")
+		menu()
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	except Exception as o:
+		print(o)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
+
+# Borra todos los correos de una URL específica
+def deleteUrl(db_file, url):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE url = ' + '"' + url + '"'
+		result = c.execute(sql).fetchone()
+		
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
+			
+			if(option == "Y" or option == "y"):
+				c.execute("DELETE FROM emails WHERE url = " + '"' + url + '"')
+				conn.commit()
+
+				print("Emails deleted")
+				input("Press enter to continue")
+				menu()
+				
+			elif(option == "N" or option == "n"):
+				print("Canceled operation, return to the menu ...")
+				time.sleep(2)
+				menu()
+				
+			else:
+				print("Select a correct option")
+				time.sleep(2)
+				deleteUrl(db_file, url)
+				
+		conn.close()
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
+
+# Borra todos los correos de una Frase específica
+def deletePhrase(db_file, phrase):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		sql = 'SELECT COUNT(*) FROM emails WHERE phrase = ' + '"' + phrase + '"'
+		result = c.execute(sql).fetchone()
+		
+		if(result[0] == 0):
+			print("There are no emails to erase")
+			input("Press enter to continue")
+			menu()
+			
+		else:
+			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
+			
+			if(option == "Y" or option == "y"):
+				c.execute("DELETE FROM emails WHERE phrase = " + '"' + phrase + '"')
+				conn.commit()
+
+				print("Emails deleted")
+				input("Press enter to continue")
+				menu()
+				
+			elif(option == "N" or option == "n"):
+				print("Canceled operation, return to the menu ...")
+				time.sleep(2)
+				menu()
+				
+			else:
+				print("Select a correct option")
+				time.sleep(2)
+				deleteUrl(db_file, phrase)
+				
+		conn.close()
+				
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
 	finally:
 		conn.close()
 
@@ -199,6 +474,7 @@ def deleteAll(db_file):
 			print("There are no emails to erase")
 			input("Press enter to continue")
 			menu()
+		
 		
 		else:			
 			option = str(input("Are you sure you want to delete " + str(result[0]) + " emails? Y/N :"))
@@ -220,6 +496,8 @@ def deleteAll(db_file):
 				print("Select a correct option")
 				time.sleep(2)
 				deleteAll(db_file)
+				
+		conn.close()
 
 	except Error as e:
 		print(e)
@@ -230,9 +508,47 @@ def deleteAll(db_file):
 		conn.close()
 
 # Lista correos por frase
-def listarPorFrase():
-	pass
+def listarPorFrase(db_file):
+	try:
+		phrase = str(input("Inserter phrase: "))
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+		
+		sql = 'SELECT COUNT(*) FROM emails WHERE phrase LIKE "%' + phrase.strip() + '%"'
+		result = c.execute(sql).fetchone()
 
+		if(result[0] == 0):
+				print("No results for the specified url")
+				input("Press enter to continue")
+				menu()
+				
+		else:
+			c.execute('SELECT * FROM emails WHERE phrase LIKE "%' + phrase.strip() + '%"')
+
+			for i in c:
+
+				print ("")
+				print ("Number: " + str(i[0]))
+				print ("Phrase: " + str(i[1]))
+				print ("Email: " + str(i[2]))
+				print ("Url: " + str(i[3]))
+				print ("-------------------------------------------------------------------------------")
+
+		conn.close()
+		
+		print ("")
+		input("Press enter key to continue")
+		menu()
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+	
+	finally:
+		conn.close()
+
+# Lista correos por URL
 def listarPorUrl(db_file):
 	try:
 		print("Example URL: http://www.pythondiario.com ")
@@ -255,12 +571,12 @@ def listarPorUrl(db_file):
 
 				print ("")
 				print ("Number: " + str(i[0]))
-				print ("Search: " + str(i[1]))
+				print ("Phrase: " + str(i[1]))
 				print ("Email: " + str(i[2]))
 				print ("Url: " + str(i[3]))
 				print ("-------------------------------------------------------------------------------")
 
-		c.close()
+		conn.close()
 		
 		print ("")
 		input("Press enter key to continue")
@@ -270,6 +586,9 @@ def listarPorUrl(db_file):
 		print(e)
 		input("Press enter to continue")
 		menu()
+		
+	finally:
+		conn.close()
 
 # Lista todos los correos
 def listarTodo(db_file):
@@ -291,12 +610,12 @@ def listarTodo(db_file):
 
 			print ("")
 			print ("Number: " + str(i[0]))
-			print ("Search: " + str(i[1]))
+			print ("Phrase: " + str(i[1]))
 			print ("Email: " + str(i[2]))
 			print ("Url: " + str(i[3]))
 			print ("-------------------------------------------------------------------------------")
 
-		c.close()
+		conn.close()
 		
 		print ("")
 		input("Press enter key to continue")
@@ -310,7 +629,7 @@ def listarTodo(db_file):
 	finally:
 		conn.close()
 
-
+# Extrae los correos de una única URL
 def extractOnlyUrl(url):
 	try:
 		print ("Searching emails... please wait")
