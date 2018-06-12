@@ -27,7 +27,7 @@
 **Versión:** Python 3.x.
 
 # Required modules - Modulos necesarios
-- googlesearch
+- google-search
 - BeautifulSoup
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
