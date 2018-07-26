@@ -34,9 +34,10 @@ if you use windows try pip update and then:
 - pip3 install google
 
 If you are in Linux, update pip and then:
-$ sudo apt-get install python3-pip
-$ sudo pip3 install google
+- sudo apt-get install python3-pip
+- sudo pip3 install google
 
+Then Install:
 - google-search
 - BeautifulSoup
 
