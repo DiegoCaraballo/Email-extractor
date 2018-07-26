@@ -27,6 +27,16 @@
 **Versión:** Python 3.x.
 
 # Required modules - Modulos necesarios
+
+**Update 26/07/18**
+
+if you use windows try pip update and then:
+pip3 install google
+
+If you are in Linux, update pip and then:
+$ sudo apt-get install python3-pip
+$ sudo pip3 install google
+
 - google-search
 - BeautifulSoup
 
