@@ -2,6 +2,12 @@
   <img width="560" height="400" src="https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG">
 </p>
 
+# Working: 19-01-2019
+- Exclude images - Add search option with images
+- Multi-thread to reduce search times
+- Search of several texts
+- Change the code to OOP
+
 # Email Extractor Functions
 
 ## English 
