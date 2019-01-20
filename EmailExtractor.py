@@ -14,6 +14,8 @@ from sqlite3 import Error
 import sys
 import re
 
+imageExt = ["jpeg", "exif", "tiff", "gif", "bmp", "png", "ppm", "pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
+
 # Menú Principal
 def menu():
 	try:
@@ -644,7 +646,7 @@ def extractOnlyUrl(url):
 		emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}', html)
 
 		for email in emails:
-			if (email not in listUrl):
+			if (email not in listUrl and email[-3:] not in imageExt):
 				count += 1
 				print(str(count) + " - " + email)
 				listUrl.append(email)
@@ -682,7 +684,7 @@ def extractUrl(url):
 		print ("Searching in " + url)
 		
 		for email in emails:
-			if (email not in listUrl):
+			if (email not in listUrl and email[-3:] not in imageExt):
 					count += 1
 					print(str(count) + " - " + email)
 					listUrl.append(email)
@@ -700,7 +702,7 @@ def extractUrl(url):
 						s = f.read().decode('utf-8')
 						emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 						for email in emails:
-							if (email not in listUrl):
+							if (email not in listUrl and email[-3:] not in imageExt):
 								count += 1
 								print(str(count) + " - " + email)
 								listUrl.append(email)
@@ -755,7 +757,7 @@ def extractFraseGoogle(frase, cantRes):
 								s = f.read().decode('utf-8')
 								emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 								for email in emails:
-									if (email not in listUrl):
+									if (email not in listUrl and email[-3:] not in imageExt):
 										count += 1
 										print(str(count) + " - " + email)										
 										listUrl.append(email)

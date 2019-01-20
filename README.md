@@ -3,10 +3,10 @@
 </p>
 
 # Working: 19-01-2019
-- Exclude images - Add search option with images
-- Multi-thread to reduce search times
-- Search of several texts
-- Change the code to OOP
+- Exclude images - Add search option with images - SATUS (OK)
+- Multi-thread to reduce search times - STATUS (PENDING)
+- Search of several texts - STATUS (PENDING)
+- Change the code to OOP - STATUS (PENDING)
 
 # Email Extractor Functions
 
