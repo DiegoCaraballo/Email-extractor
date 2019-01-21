@@ -739,7 +739,7 @@ def extractFraseGoogle(frase, firstRes, cantRes):
 		listUrl = []
 		count = 0
 
-		for url in search(frase, num=firstRes, stop=cantRes):
+		for url in search(frase, start=firstRes, stop=cantRes):
 			listUrl.append(url)
 
 		for i in listUrl:
