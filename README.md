@@ -46,5 +46,7 @@ If you are in Linux, update pip and then:
 Then Install:
 - google-search
 - BeautifulSoup
+- fake-useragent (NEW)
+
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)

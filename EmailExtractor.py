@@ -13,8 +13,10 @@ import sqlite3
 from sqlite3 import Error
 import sys
 import re
+from fake_useragent import UserAgent
 
 imageExt = ["jpeg", "exif", "tiff", "gif", "bmp", "png", "ppm", "pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
+ua = UserAgent()
 
 # Menú Principal
 def menu():
@@ -639,7 +641,14 @@ def extractOnlyUrl(url):
 		count = 0
 		listUrl = []
 
-		conn = urllib.request.urlopen(url)
+		req = urllib.request.Request(
+    			url, 
+    			data=None, 
+    			headers={
+        		'User-Agent': ua.random
+    		})
+
+		conn = urllib.request.urlopen(req)
 
 		html = conn.read().decode('utf-8')		
 
@@ -673,10 +682,15 @@ def extractUrl(url):
 	print ("This operation may take several minutes")
 	try:
 		count = 0
-
 		listUrl = []
+		req = urllib.request.Request(
+    			url, 
+    			data=None, 
+    			headers={
+        		'User-Agent': ua.random
+    		})
 
-		conn = urllib.request.urlopen(url)
+		conn = urllib.request.urlopen(req)
 
 		html = conn.read().decode('utf-8')
 		
@@ -698,7 +712,13 @@ def extractUrl(url):
 				try:
 					print ("Searching in " + link)
 					if(link[0:4] == 'http'):
-						f = urllib.request.urlopen(link)
+						req = urllib.request.Request(
+							link, 
+							data=None, 
+							headers={
+							'User-Agent': ua.random
+							})
+						f = urllib.request.urlopen(req)
 						s = f.read().decode('utf-8')
 						emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 						for email in emails:
@@ -741,7 +761,14 @@ def extractFraseGoogle(frase, cantRes):
 
 		for i in listUrl:
 			try:
-				conn = urllib.request.urlopen(i)
+				req = urllib.request.Request(
+							i, 
+							data=None, 
+							headers={
+							'User-Agent': ua.random
+							})
+
+				conn = urllib.request.urlopen(req)
 				html = conn.read()
 
 				soup = BeautifulSoup(html, "lxml")
@@ -753,7 +780,13 @@ def extractFraseGoogle(frase, cantRes):
 						try:
 							print ("Searching in " + link)
 							if(link[0:4] == 'http'):
-								f = urllib.request.urlopen(link)
+								req = urllib.request.Request(
+										link, 
+										data=None, 
+										headers={
+										'User-Agent': ua.random
+										})	
+								f = urllib.request.urlopen(req)
 								s = f.read().decode('utf-8')
 								emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 								for email in emails:
