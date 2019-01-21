@@ -61,11 +61,14 @@ def menu():
 		elif (opcion == "3"):
 			print("")
 			frase = str(input("Enter a phrase to search - Ingrese una frase a buscar: "))
+			print ("***To start from first result enter 0***")
+			firstRes = int(input("First results to retrieve: "))
+			print ("")
 			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
 			cantRes = int(input("Number of results in Google - Cantiad de resultados en Google: ")) 
 			print ("")
-			extractFraseGoogle(frase, cantRes)
+			extractFraseGoogle(frase, firstRes, cantRes)
 			input("Press enter key to continue")
 			menu()
 		
@@ -729,14 +732,14 @@ def extractUrl(url):
 
 # Extrae los correos de todas las Url encontradas en las busquedas
 # De cada Url extrae los correo - 2 niveles
-def extractFraseGoogle(frase, cantRes):
+def extractFraseGoogle(frase, firstRes, cantRes):
 	print ("Searching emails... please wait")
 	print ("This operation may take several minutes")
 	try:
 		listUrl = []
 		count = 0
 
-		for url in search(frase, stop=cantRes):
+		for url in search(frase, num=firstRes, stop=cantRes):
 			listUrl.append(url)
 
 		for i in listUrl:
