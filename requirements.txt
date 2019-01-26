@@ -1,0 +1,3 @@
+google-search
+BeautifulSoup
+fake-useragent
