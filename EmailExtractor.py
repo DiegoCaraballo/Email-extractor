@@ -14,6 +14,15 @@ from sqlite3 import Error
 import sys
 import re
 from fake_useragent import UserAgent
+from socket import error as SocketError
+import errno
+
+try:
+    response = urllib2.urlopen(request).read()
+except SocketError as e:
+    if e.errno != errno.ECONNRESET:
+        raise # Not error we are looking for
+    pass # Handle error here.
 
 imageExt = ["jpeg", "exif", "tiff", "gif", "bmp", "png", "ppm", "pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
 ua = UserAgent()
@@ -810,6 +819,11 @@ def extractFraseGoogle(frase, firstRes, cantRes):
 				print("Problems with the url:" + i)
 				print(e)
 				pass
+
+			except SocketError as e:
+    if e.errno != errno.ECONNRESET:
+        raise # Not error we are looking for
+    pass # Handle error here.
 
 	except KeyboardInterrupt:
 		input("Press return to continue")
