@@ -820,11 +820,6 @@ def extractFraseGoogle(frase, firstRes, cantRes):
 				print(e)
 				pass
 
-			except SocketError as e:
-    if e.errno != errno.ECONNRESET:
-        raise # Not error we are looking for
-    pass # Handle error here.
-
 	except KeyboardInterrupt:
 		input("Press return to continue")
 		menu()
