@@ -16,6 +16,12 @@ import sqlite3
 from sqlite3 import Error
 import sys
 import re
+from fake_useragent import UserAgent
+from socket import timeout
+from urllib.error import HTTPError, URLError
+
+imageExt = ["jpeg", "exif", "tiff", "gif", "bmp", "png", "ppm", "pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
+ua = UserAgent()
 
 count_email_in_phrase = 0
 
@@ -42,10 +48,11 @@ def menu():
 		print("1 - Search only in the entered URL - Buscar solo en la URL ingresada")
 		print("2 - Search in a url (Two Levels) - Buscar en una URL(Dos Niveles)")
 		print("3 - Search phrase in google - Buscar frase en Google")
-		print("4 - List emails - Listar correos")
-		print("5 - Save emails in .txt file - Guardar correos en archivo .txt")
-		print("6 - Delete Emails from Data Base")
-		print("7 - Exit - Salir")
+		print("4 - Same as option 3 but with a list of keywords")
+		print("5 - List emails - Listar correos")
+		print("6 - Save emails in .txt file - Guardar correos en archivo .txt")
+		print("7 - Delete Emails from Data Base")
+		print("8 - Exit - Salir")
 		print("")
 
 		opcion = input("Enter option - Ingrese Opcion: ")
@@ -75,8 +82,14 @@ def menu():
 			extractFraseGoogle(frase, cantRes)
 			input("Press enter key to continue")
 			menu()
-		
+
 		elif (opcion == "4"):
+			#extractKeywordsList("KeywordsList.txt")
+			print("Developing...")
+			input("Press enter key to continue")
+			menu()
+		
+		elif (opcion == "5"):
 			print ("")
 			print ("1 - Select a phrase - Seleccionar una frase")
 			print ("2 - Insert a URL")
@@ -97,7 +110,7 @@ def menu():
 				time.sleep(2)
 				menu()
 
-		elif (opcion == "5"):
+		elif (opcion == "6"):
 			print("")
 			print("1 - Save emails from a phrase - Guardar correos de una frase")
 			print("2 - Save emails from a URL - Guardar correos de una URL")
@@ -121,7 +134,7 @@ def menu():
 				time.sleep(2)
 				menu()
 
-		elif (opcion == "6"):
+		elif (opcion == "7"):
 			print("")
 			print("1 - Delete emails from a especific URL")
 			print("2 - Delete emails from a especific phrase")
@@ -145,7 +158,7 @@ def menu():
 				time.sleep(2)
 				menu()
 		
-		elif (opcion == "7"):
+		elif (opcion == "8"):
 			sys.exit(0)
 
 		else:			
@@ -646,14 +659,35 @@ def extractOnlyUrl(url):
 		count = 0
 		listUrl = []
 
-		conn = urllib.request.urlopen(url)
+		req = urllib.request.Request(
+    			url, 
+    			data=None, 
+    			headers={
+        		'User-Agent': ua.random
+    		})
 
-		html = conn.read().decode('utf-8')		
+		try:
+			conn = urllib.request.urlopen(req, timeout=10)
+
+		except timeout:
+			raise ValueError('Timeout ERROR')
+
+		except (HTTPError, URLError):
+			raise ValueError('Bad Url...')
+
+		status = conn.getcode()
+		contentType = conn.info().get_content_type()
+
+		if(status != 200 or contentType == "audio/mpeg"):
+    			raise ValueError('Bad Url...')
+
+
+		html = conn.read().decode('utf-8')
 
 		emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}', html)
 
 		for email in emails:
-			if (email not in listUrl):
+			if (email not in listUrl and email[-3:] not in imageExt):
 				count += 1
 				print(str(count) + " - " + email)
 				listUrl.append(email)
@@ -680,10 +714,28 @@ def extractUrl(url):
 	print ("This operation may take several minutes")
 	try:
 		count = 0
-
 		listUrl = []
+		req = urllib.request.Request(
+    			url, 
+    			data=None, 
+    			headers={
+        		'User-Agent': ua.random
+    		})
 
-		conn = urllib.request.urlopen(url)
+		try:
+			conn = urllib.request.urlopen(req, timeout=10)
+
+		except timeout:
+			raise ValueError('Timeout ERROR')
+
+		except (HTTPError, URLError):
+			raise ValueError('Bad Url...')
+
+		status = conn.getcode()
+		contentType = conn.info().get_content_type()
+
+		if(status != 200 or contentType == "audio/mpeg"):
+    			raise ValueError('Bad Url...')
 
 		html = conn.read().decode('utf-8')
 		
@@ -691,7 +743,7 @@ def extractUrl(url):
 		print ("Searching in " + url)
 		
 		for email in emails:
-			if (email not in listUrl):
+			if (email not in listUrl and email[-3:] not in imageExt):
 					count += 1
 					print(str(count) + " - " + email)
 					listUrl.append(email)
@@ -699,17 +751,49 @@ def extractUrl(url):
 		soup = BeautifulSoup(html, "lxml")
 		links = soup.find_all('a')
 
+		print("They will be analyzed " + str(len(links) + 1) + " Urls..." )
+		time.sleep(2)
+
 		for tag in links:
 			link = tag.get('href', None)
 			if link is not None:
 				try:
 					print ("Searching in " + link)
 					if(link[0:4] == 'http'):
-						f = urllib.request.urlopen(link)
+						req = urllib.request.Request(
+							link, 
+							data=None, 
+							headers={
+							'User-Agent': ua.random
+							})
+
+						try:
+							f = urllib.request.urlopen(req, timeout=10)
+
+						except timeout:
+							print("Bad Url..")
+							time.sleep(2)
+							pass
+
+						except (HTTPError, URLError):
+							print("Bad Url..")
+							time.sleep(2)
+							pass
+
+						status = f.getcode()
+						contentType = f.info().get_content_type()
+
+						if(status != 200 or contentType == "audio/mpeg"):
+							print("Bad Url..")
+							time.sleep(2)
+							pass
+						
 						s = f.read().decode('utf-8')
+
 						emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
+
 						for email in emails:
-							if (email not in listUrl):
+							if (email not in listUrl and email[-3:] not in imageExt):
 								count += 1
 								print(str(count) + " - " + email)
 								listUrl.append(email)
@@ -750,11 +834,38 @@ def extractFraseGoogle(frase, cantRes):
 
 		for i in listUrl:
 			try:
-				conn = urllib.request.urlopen(i)
+				req = urllib.request.Request(
+							i, 
+							data=None, 
+							headers={
+							'User-Agent': ua.random
+							})
+				try:
+					conn = urllib.request.urlopen(req)
+				except timeout:
+					print("Bad Url..")
+					time.sleep(2)
+					pass
+				except(HTTPError, URLError):
+					print("Bad Url..")
+					time.sleep(2)
+					pass
+
+				status = conn.getcode()
+				contentType = conn.info().get_content_type()
+
+				if(status != 200 or contentType == "audio/mpeg"):
+					print("Bad Url..")
+					time.sleep(2)
+					pass
+
 				html = conn.read()
 
 				soup = BeautifulSoup(html, "lxml")
 				links = soup.find_all('a')
+
+				print("They will be analyzed " + str(len(links) + 1) + " Urls..." )
+				time.sleep(2)
 
 				for tag in links:
 					link = tag.get('href', None)
@@ -788,6 +899,16 @@ def extractFraseGoogle(frase, cantRes):
 		print(e)
 		input("Press enter to continue")
 		menu()
+		
+# Extraer lista de palabras claves de txt
+def extractKeywordsList(txtFile):
+	f = open(txtFile, 'r')
+	text = f.read()
+	keywordList = text.split(sep='\n')
+	for key in keywordList:
+    		print(key)
+
+
 
 # Limpia la pantalla según el sistema operativo
 def clear():

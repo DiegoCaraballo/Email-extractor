@@ -2,6 +2,9 @@
   <img width="560" height="400" src="https://github.com/DiegoCaraballo/Email-extractor/blob/master/EmailExtractor.PNG">
 </p>
 
+# Fix: 13-09-2019
+- Fix - The script was pasted when searching for phrases on Google.
+
 # Email Extractor Functions
 
 ## English 
@@ -27,7 +30,20 @@
 **Versión:** Python 3.x.
 
 # Required modules - Modulos necesarios
-- googlesearch
+
+**Update 26/07/18**
+
+if you use windows try pip update and then:
+- pip3 install google
+
+If you are in Linux, update pip and then:
+- sudo apt-get install python3-pip
+- sudo pip3 install google
+
+Then Install:
+- google-search
 - BeautifulSoup
+- fake-useragent (NEW)
 
 
+[Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
