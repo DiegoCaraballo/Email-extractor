@@ -4,6 +4,7 @@
 
 # Fix: 13-09-2019
 - Fix - The script was pasted when searching for phrases on Google.
+- Add Requirements - pip install -r requirements.txt
 
 # Email Extractor Functions
 
@@ -31,19 +32,9 @@
 
 # Required modules - Modulos necesarios
 
-**Update 26/07/18**
+**Update 13-09-2019**
 
-if you use windows try pip update and then:
-- pip3 install google
-
-If you are in Linux, update pip and then:
-- sudo apt-get install python3-pip
-- sudo pip3 install google
-
-Then Install:
-- google-search
-- BeautifulSoup
-- fake-useragent (NEW)
+pip install -r requirements.txt
 
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
