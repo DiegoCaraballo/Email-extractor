@@ -4,8 +4,11 @@
 # Blog: www.pythondiario.com
 
 from googlesearch import search
+from socket import timeout
+import http
 from bs4 import BeautifulSoup
 import urllib.request
+from urllib.request import URLError, HTTPError
 import random
 import os
 import time
@@ -14,8 +17,14 @@ from sqlite3 import Error
 import sys
 import re
 
+count_email_in_phrase = 0
+
 # Menú Principal
 def menu():
+    	
+	global count_email_in_phrase
+	count_email_in_phrase = 0
+
 	try:
 		clear()
 		print('		                  .-"""-.                              ')
@@ -713,8 +722,10 @@ def extractUrl(url):
 		
 		print("")
 		print("***********************")
-		print(str(count) + " emails were found")
+		print("Finish: " + str(count) + " emails were found")
 		print("***********************")
+		input("Press return to continue")
+		menu()
 
 	except KeyboardInterrupt:
 		input("Press return to continue")
@@ -732,7 +743,7 @@ def extractFraseGoogle(frase, cantRes):
 	print ("This operation may take several minutes")
 	try:
 		listUrl = []
-		count = 0
+		listEmails = []
 
 		for url in search(frase, stop=cantRes):
 			listUrl.append(url)
@@ -748,30 +759,26 @@ def extractFraseGoogle(frase, cantRes):
 				for tag in links:
 					link = tag.get('href', None)
 					if link is not None:
-						try:
-							print ("Searching in " + link)
-							if(link[0:4] == 'http'):
-								f = urllib.request.urlopen(link)
-								s = f.read().decode('utf-8')
-								emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
-								for email in emails:
-									if (email not in listUrl):
-										count += 1
-										print(str(count) + " - " + email)										
-										listUrl.append(email)
-										if (searchEmail("Emails.db", email, frase) == 0):
-											insertEmail("Emails.db", email, frase, link)
-											
-						# Sigue si existe algun error
-						except Exception:
-							pass
+    					# Fix TimeOut
+						searchSpecificLink(link, listEmails, frase)
 		
-				print(str(count) + " emails were found")
-
 			except urllib.error.URLError as e:
 				print("Problems with the url:" + i)
 				print(e)
 				pass
+			except (http.client.IncompleteRead) as e:
+				print(e)
+				pass
+			except Exception as e:
+				print(e)
+				pass
+		
+		print("")
+		print("*******")
+		print("Finish")
+		print("*******")
+		input("Press return to continue")
+		menu()
 
 	except KeyboardInterrupt:
 		input("Press return to continue")
@@ -793,6 +800,38 @@ def clear():
 		print(e)
 		input("Press enter to continue")
 		menu()
+   
+def searchSpecificLink(link, listEmails, frase):
+	try:
+
+		global count_email_in_phrase
+
+		print ("Searching in " + link)
+		if(link[0:4] == 'http'):
+			f = urllib.request.urlopen(link, timeout=10)
+			s = f.read().decode('utf-8')
+			emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
+			for email in emails:
+				if (email not in listEmails):
+					count_email_in_phrase += 1
+					listEmails.append(email)
+					print(str(count_email_in_phrase) + " - " + email)										
+					if (searchEmail("Emails.db", email, frase) == 0):
+						insertEmail("Emails.db", email, frase, link)
+						
+	# Sigue si existe algun error	
+	except (HTTPError, URLError) as e:
+		print(e)
+		pass
+	except timeout:
+		print('socket timed out - URL %s', link)
+		pass
+	except (http.client.IncompleteRead) as e:
+		print(e)
+		pass
+	except Exception as e:
+		print(e)
+		pass
 
 # Inicio de Programa
 def Main():
