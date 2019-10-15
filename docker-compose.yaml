@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+
+ email-extractor:
+  container_name: ${APP_NAME}
+  image: ${APP_IMAGE_LOCAL}/${APP_NAME}:${APP_VERSION}
+  networks:
+   - ${NETWORK_EMAIL_EXTRACTOR}
+  build:
+   context: .
+   args:
+    - IMAGE=${APP_IMAGE}
+    - VERSION=${APP_VERSION}
+  stdin_open: true
+  tty: true
+
+networks:
+ network-email-extractor:
+  name: ${NETWORK_EMAIL_EXTRACTOR}

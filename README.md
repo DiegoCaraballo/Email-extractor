@@ -38,3 +38,44 @@ pip install -r requirements.txt
 
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
+
+## Docker
+
+Docker and docker-compose are required.
+
+In order to use docker follow below instructions:
+
+### Installation 
+
+1. Get an .env file
+
+```
+cp .env.example .env
+```
+
+2. Start docker container
+
+```
+docker-compose up -d --build
+```
+
+### Usage
+
+To execute the script and get the options menu:
+
+```
+docker exec -ti email-extractor python EmailExtractor.py
+```
+
+To get the sqlite db with al e-mails:
+
+```
+docker cp email-extractor:Emails.db .
+```
+
+To get the file saved, for instance, as "out":
+
+```
+ocker cp email-extractor:out.txt .
+```
+
