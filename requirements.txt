@@ -1,5 +1,5 @@
 beautifulsoup4==4.8.0
 fake-useragent==0.1.11
 google==2.0.2
-lxml==4.4.1
+lxml==4.6.3
 soupsieve==1.9.3
