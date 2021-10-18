@@ -20,7 +20,8 @@ from fake_useragent import UserAgent
 from socket import timeout
 from urllib.error import HTTPError, URLError
 
-imageExt = ["jpeg", "exif", "tiff", "gif", "bmp", "png", "ppm", "pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
+imageExt = ["jpeg", "jpg", "exif", "tif", "tiff", "gif", "bmp", "png", "ppm",
+			"pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
 ua = UserAgent()
 
 count_email_in_phrase = 0
@@ -77,7 +78,7 @@ def menu():
 			frase = str(input("Enter a phrase to search - Ingrese una frase a buscar: "))
 			print ("***Warning: The amount of results chosen impacts the execution time***")
 			print ("*** Advertencia: La cantidad de resultados elejidos impacta el tiempo de ejecucion")
-			cantRes = int(input("Number of results in Google - Cantiad de resultados en Google: ")) 
+			cantRes = int(input("Number of Google links to explore - Cantiad de resultados en Google: "))
 			print ("")
 			extractFraseGoogle(frase, cantRes)
 			input("Press enter key to continue")
@@ -352,7 +353,7 @@ def guardarAll(db_file):
 		result = c.execute(sql).fetchone()
 
 		if(result[0] == 0):
-			print("There are no emails to erase")
+			print("There are no emails to save")
 			input("Press enter to continue")
 			menu()
 			
@@ -927,13 +928,13 @@ def searchSpecificLink(link, listEmails, frase):
 
 		global count_email_in_phrase
 
-		print ("Searching in " + link)
+		print("Searching in " + link)
 		if(link[0:4] == 'http'):
 			f = urllib.request.urlopen(link, timeout=10)
 			s = f.read().decode('utf-8')
 			emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 			for email in emails:
-				if (email not in listEmails):
+				if (email not in listEmails and email[-3:] not in imageExt):
 					count_email_in_phrase += 1
 					listEmails.append(email)
 					print(str(count_email_in_phrase) + " - " + email)										
