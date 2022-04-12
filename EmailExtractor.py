@@ -829,7 +829,7 @@ def extractFraseGoogle(frase, cantRes):
 		listUrl = []
 		listEmails = []
 
-		for url in search(frase, stop=cantRes):
+		for url in search(frase, cantRes):
 			listUrl.append(url)
 
 		for i in listUrl:
