@@ -35,7 +35,7 @@
 **Update 13-09-2019**
 
 pip install -r requirements.txt
-
+`conda install lxml` also works if there is a build error
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
 
