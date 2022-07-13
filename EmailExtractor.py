@@ -19,9 +19,11 @@ import re
 from fake_useragent import UserAgent
 from socket import timeout
 from urllib.error import HTTPError, URLError
+from datetime import datetime
+import csv
 
-imageExt = ["jpeg", "jpg", "exif", "tif", "tiff", "gif", "bmp", "png", "ppm",
-			"pgm", "pbm", "pnm", "webp", "hdr", "heif", "bat", "bpg", "cgm", "svg"]
+imageExt = (".jpeg", ".jpg", ".exif", ".tif", ".tiff", ".gif", ".bmp", ".png", ".ppm",
+			".pgm", ".pbm", ".pnm", ".webp", ".hdr", ".heif", ".bat", ".bpg", ".cgm", ".svg")
 ua = UserAgent()
 
 count_email_in_phrase = 0
@@ -52,8 +54,9 @@ def menu():
 		print("4 - Same as option 3 but with a list of keywords")
 		print("5 - List emails - Listar correos")
 		print("6 - Save emails in .txt file - Guardar correos en archivo .txt")
-		print("7 - Delete Emails from Data Base")
-		print("8 - Exit - Salir")
+		print("7 - Save emails in .csv file - Guardar correos en archivo .csv")
+		print("8 - Delete Emails from Data Base")
+		print("9 - Exit - Salir")
 		print("")
 
 		opcion = input("Enter option - Ingrese Opcion: ")
@@ -136,6 +139,9 @@ def menu():
 				menu()
 
 		elif (opcion == "7"):
+			guardarCsv("Emails.db")
+
+		elif (opcion == "8"):
 			print("")
 			print("1 - Delete emails from a especific URL")
 			print("2 - Delete emails from a especific phrase")
@@ -159,7 +165,7 @@ def menu():
 				time.sleep(2)
 				menu()
 		
-		elif (opcion == "8"):
+		elif (opcion == "9"):
 			sys.exit(0)
 
 		else:			
@@ -680,15 +686,14 @@ def extractOnlyUrl(url):
 		contentType = conn.info().get_content_type()
 
 		if(status != 200 or contentType == "audio/mpeg"):
-    			raise ValueError('Bad Url...')
-
+			raise ValueError('Bad Url...')
 
 		html = conn.read().decode('utf-8')
 
 		emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}', html)
 
 		for email in emails:
-			if (email not in listUrl and email[-3:] not in imageExt):
+			if (email not in listUrl and not email.endswith(imageExt)):
 				count += 1
 				print(str(count) + " - " + email)
 				listUrl.append(email)
@@ -736,7 +741,7 @@ def extractUrl(url):
 		contentType = conn.info().get_content_type()
 
 		if(status != 200 or contentType == "audio/mpeg"):
-    			raise ValueError('Bad Url...')
+			raise ValueError('Bad Url...')
 
 		html = conn.read().decode('utf-8')
 		
@@ -744,7 +749,7 @@ def extractUrl(url):
 		print ("Searching in " + url)
 		
 		for email in emails:
-			if (email not in listUrl and email[-3:] not in imageExt):
+			if (email not in listUrl and not email.endswith(imageExt)):
 					count += 1
 					print(str(count) + " - " + email)
 					listUrl.append(email)
@@ -794,7 +799,7 @@ def extractUrl(url):
 						emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 
 						for email in emails:
-							if (email not in listUrl and email[-3:] not in imageExt):
+							if (email not in listUrl and not email.endswith(imageExt)):
 								count += 1
 								print(str(count) + " - " + email)
 								listUrl.append(email)
@@ -909,8 +914,6 @@ def extractKeywordsList(txtFile):
 	for key in keywordList:
     		print(key)
 
-
-
 # Limpia la pantalla según el sistema operativo
 def clear():
 	try:
@@ -934,7 +937,7 @@ def searchSpecificLink(link, listEmails, frase):
 			s = f.read().decode('utf-8')
 			emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", s)
 			for email in emails:
-				if (email not in listEmails and email[-3:] not in imageExt):
+				if (email not in listEmails and not email.endswith(imageExt)):
 					count_email_in_phrase += 1
 					listEmails.append(email)
 					print(str(count_email_in_phrase) + " - " + email)										
@@ -954,6 +957,47 @@ def searchSpecificLink(link, listEmails, frase):
 	except Exception as e:
 		print(e)
 		pass
+
+def guardarCsv(db_file):
+	try:
+		conn = sqlite3.connect(db_file)
+		c = conn.cursor()
+
+		nameFile = datetime.now().strftime('csvemails_%Y_%m_%d_%H_%M_%S.csv')
+		print("")
+		print("Creating csv, please wait...")
+		
+		f = open(nameFile, "w", newline="")
+		writer = csv.writer(f)
+
+		header = ['Phrase', 'Email', 'Url']
+		writer.writerow(header)
+	
+		c.execute('SELECT * FROM emails')
+				
+		for i in c:
+			row = [str(i[1]), str(i[2]), str(i[3])]
+			writer.writerow(row)
+			
+		f.close()
+			
+		conn.close()
+		
+		input("Press enter to continue")
+		menu()
+		
+	except Error as e:
+		print(e)
+		input("Press enter to continue")
+		menu()
+		
+	except Exception as o:
+		print(o)
+		input("Press enter to continue")
+		menu()
+		
+	finally:
+		conn.close()
 
 # Inicio de Programa
 def Main():
