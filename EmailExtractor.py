@@ -753,6 +753,8 @@ def extractUrl(url):
 					count += 1
 					print(str(count) + " - " + email)
 					listUrl.append(email)
+					if(searchEmail("Emails.db", email, "Especific Search") == 0):
+						insertEmail("Emails.db", email, "Especific Search", url)
 
 		soup = BeautifulSoup(html, "lxml")
 		links = soup.find_all('a')
