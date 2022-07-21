@@ -688,7 +688,7 @@ def extractOnlyUrl(url):
 		if(status != 200 or contentType == "audio/mpeg"):
 			raise ValueError('Bad Url...')
 
-		html = conn.read().decode('utf-8')
+		html = conn.read().decode(conn.headers.get_content_charset())
 
 		emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}', html)
 
@@ -743,7 +743,7 @@ def extractUrl(url):
 		if(status != 200 or contentType == "audio/mpeg"):
 			raise ValueError('Bad Url...')
 
-		html = conn.read().decode('utf-8')
+		html = conn.read().decode(conn.headers.get_content_charset())
 		
 		emails = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", html)
 		print ("Searching in " + url)
