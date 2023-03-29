@@ -82,5 +82,5 @@ docker cp email-extractor:Emails.db .
 To get the file saved, for instance, as "out":
 
 ```
-ocker cp email-extractor:out.txt .
+docker cp email-extractor:out.txt .
 ```
