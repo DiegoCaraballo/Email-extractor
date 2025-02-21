@@ -45,6 +45,8 @@ pip install -r requirements.txt
 
 [Extraer correos de paginas web con Python](http://www.pythondiario.com/2018/04/extraer-correos-electronicos-de-paginas.html)
 
+[Software de control de asistencia de personal](https://cucutime.com)
+
 ## Docker
 
 Docker and docker-compose are required.
